@@ -1,0 +1,4 @@
+deployment:
+  image: postgres
+  deploymentname: postgres-deployment
+  containername: postgres

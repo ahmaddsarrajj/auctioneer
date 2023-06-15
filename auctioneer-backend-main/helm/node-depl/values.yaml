@@ -1,0 +1,5 @@
+deployment:
+  image: 03321286/node-test
+  tag: latest
+  deploymentname: node-deployment
+  containername: node-server

@@ -1,0 +1,122 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        Int    @id @default(autoincrement())
+  phone     String
+  username  String @unique
+  password  String
+
+  role            Role             @relation(fields: [roleId], references: [id])
+  roleId          Int              @default(3)
+
+  rating Rating[]
+
+  item Item[]
+
+  wishList WishList[]
+
+  auction Auction[]
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  role String
+
+  user User[]
+}
+
+model Rating {
+  id  Int @id @default(autoincrement())
+  rate  Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int 
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String
+  icon          String
+  item Item[]
+  
+}
+
+model Item {
+  id  Int @id @default(autoincrement())
+  name String
+  description String
+
+  condition  Condition @relation(fields: [conditionId], references: [id])
+  conditionId Int
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int 
+
+  user  User @relation(fields: [userId], references: [id])
+  userId Int
+
+  image String
+
+  images Images[]
+
+  price Decimal
+  currentPrice Decimal
+
+  auction Auction?
+  
+}
+
+model Condition {
+  id  Int @id @default(autoincrement())
+  name String
+
+  item Item[]
+
+}
+
+model Auction {
+  id  Int @id @default(autoincrement())
+  
+  item Item @relation(fields: [itemId], references: [id])
+  itemId Int @unique
+
+  startingDate String
+  endingDate String
+
+  minBid Decimal? 
+  
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  wishList WishList[]
+}
+
+
+model WishList {
+
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  auctionId Int
+
+  user  User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@id([auctionId, userId])
+}
+
+model Images {
+  id  Int @id @default(autoincrement())
+  name String
+  url String
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  itemId Int
+}
